@@ -32,7 +32,7 @@ LightServer::~LightServer() {
 
 void LightServer::timerTick() {
     // shift sequence
-    data.append(data, 3);
+    data.append(data.mid(0, 3));
     data.remove(0, 3);
     m_backlight->write(data);
 }
