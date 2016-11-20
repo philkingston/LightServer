@@ -7,20 +7,22 @@ QT_USE_NAMESPACE
 
 LightServer::LightServer(quint16 port, Backlight *backlight, bool debug, QObject *parent) :
     QObject(parent),
-    m_pWebSocketServer(new QWebSocketServer(QStringLiteral("Echo Server"),
+    m_pWebSocketServer(new QWebSocketServer(QStringLiteral("LightServer"),
                                             QWebSocketServer::NonSecureMode, this)),
     m_clients(),
     m_debug(debug),
     m_backlight(backlight) {
     if (m_pWebSocketServer->listen(QHostAddress::Any, port)) {
         if (m_debug)
-            qDebug() << "Echoserver listening on port" << port;
+            qDebug() << "LightServer listening on port" << port;
         connect(m_pWebSocketServer, &QWebSocketServer::newConnection,
                 this, &LightServer::onNewConnection);
         connect(m_pWebSocketServer, &QWebSocketServer::closed, this, &LightServer::closed);
     } else {
         qDebug() << m_pWebSocketServer->errorString();
     }
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(LightServer::~timerTick()));
 }
 
 LightServer::~LightServer() {
@@ -28,11 +30,14 @@ LightServer::~LightServer() {
     qDeleteAll(m_clients.begin(), m_clients.end());
 }
 
+void LightServer::timerTick() {
+    qDebug() << "tick";
+}
+
 void LightServer::onNewConnection() {
     QWebSocket *pSocket = m_pWebSocketServer->nextPendingConnection();
 
     connect(pSocket, &QWebSocket::textMessageReceived, this, &LightServer::processTextMessage);
-    connect(pSocket, &QWebSocket::binaryMessageReceived, this, &LightServer::processBinaryMessage);
     connect(pSocket, &QWebSocket::disconnected, this, &LightServer::socketDisconnected);
 
     m_clients << pSocket;
@@ -40,21 +45,17 @@ void LightServer::onNewConnection() {
 
 void LightServer::processTextMessage(QString message) {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    m_backlight->write(message);
-//    if (m_debug)
-        qDebug() << "Message received:" << message;
-    if (pClient) {
-        pClient->sendTextMessage(message);
-    }
-}
-
-void LightServer::processBinaryMessage(QByteArray message) {
-    QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if (m_debug)
-        qDebug() << "Binary Message received:" << message;
-    if (pClient) {
-        pClient->sendBinaryMessage(message);
+        qDebug() << "Message received:" << message;
+    if(message == "fastcycle") {
+        // Start fast timer
+        timer->start(1000);
+    } else {
+        m_backlight->write(message);
     }
+//    if (pClient) {
+//        pClient->sendTextMessage(message);
+//    }
 }
 
 void LightServer::socketDisconnected() {
