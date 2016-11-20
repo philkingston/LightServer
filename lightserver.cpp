@@ -50,6 +50,8 @@ void LightServer::processTextMessage(QString message) {
     if(message == "fastcycle") {
         // Start fast timer
         timer->start(1000);
+    } else if(message == 'static') {
+        timer->stop();
     } else {
         m_backlight->write(message);
     }
