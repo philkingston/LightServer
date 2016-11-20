@@ -22,7 +22,7 @@ LightServer::LightServer(quint16 port, Backlight *backlight, bool debug, QObject
         qDebug() << m_pWebSocketServer->errorString();
     }
     timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(LightServer::~timerTick()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(LightServer::timerTick()));
 }
 
 LightServer::~LightServer() {
