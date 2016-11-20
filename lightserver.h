@@ -32,6 +32,7 @@ private:
     bool m_debug;
     Backlight *m_backlight;
     QTimer *timer;
+    QString data = "";
 };
 
 #endif //LIGHTSERVER_H

@@ -31,7 +31,8 @@ LightServer::~LightServer() {
 }
 
 void LightServer::timerTick() {
-    qDebug() << "tick";
+    // shift sequence
+    m_backlight->write(data);
 }
 
 void LightServer::onNewConnection() {
@@ -48,11 +49,15 @@ void LightServer::processTextMessage(QString message) {
         qDebug() << "Message received:" << message;
     if(message == "fastcycle") {
         // Start fast timer
+        timer->start(100);
+    } else if(message == "slowcycle") {
+        // Start fast timer
         timer->start(1000);
-    } else if(message == "static") {
+    }if(message == "static") {
         timer->stop();
     } else {
-        m_backlight->write(message);
+        data = message;
+        m_backlight->write(data);
     }
 }
 

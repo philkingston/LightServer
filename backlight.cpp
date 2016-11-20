@@ -52,7 +52,7 @@ void *Backlight::queueProcessor(void *arg) {
         }
 
         // Sleep, crucial to the thread
-        usleep(10000);
+        usleep(1000);
     }
 
     // We'll never get here, but still...
