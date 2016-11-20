@@ -44,7 +44,6 @@ void LightServer::onNewConnection() {
 }
 
 void LightServer::processTextMessage(QString message) {
-    QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if (m_debug)
         qDebug() << "Message received:" << message;
     if(message == "fastcycle") {
@@ -55,9 +54,6 @@ void LightServer::processTextMessage(QString message) {
     } else {
         m_backlight->write(message);
     }
-//    if (pClient) {
-//        pClient->sendTextMessage(message);
-//    }
 }
 
 void LightServer::socketDisconnected() {
