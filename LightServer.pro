@@ -1,4 +1,4 @@
-QT += core qml quick websockets
+QT += core qml websockets
 #QT -= gui
 
 CONFIG += c++11
